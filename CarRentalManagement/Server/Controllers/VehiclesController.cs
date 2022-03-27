@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CarRentalManagement.Server.Controllers
 {
     //[Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class VehiclesController : ControllerBase
     {
@@ -22,7 +22,8 @@ namespace CarRentalManagement.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetVehicles()
         {
-            var Vehicles = await _unitOfWork.Vehicles.GetAll();
+            var includes = new List<string> { "Make", "Model", "Color" };
+            var Vehicles = await _unitOfWork.Vehicles.GetAll(includes: includes);
             return Ok(Vehicles);
         }
 
@@ -30,7 +31,8 @@ namespace CarRentalManagement.Server.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVehicle(int id)
         {
-            var Vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id);
+            var includes = new List<string> { "Make", "Model", "Color", "Bookings" };
+            var Vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id, includes);
 
             if (Vehicle == null)
             {
@@ -71,16 +73,16 @@ namespace CarRentalManagement.Server.Controllers
             return NoContent();
         }
 
-        // POST: /Vehicles
+        // POST: api/Vehicles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Vehicle>> PostVehicle(Vehicle Vehicle)
+        public async Task<ActionResult<Vehicle>> PostVehicle(Vehicle vehicle)
         {
-            await _unitOfWork.Vehicles.Insert(Vehicle);
+            await _unitOfWork.Vehicles.Insert(vehicle);
             await _unitOfWork.Save(HttpContext);
 
             //return CreatedAtAction("GetVehicle", new { id = Vehicle.Id }, Vehicle);
-            return CreatedAtAction(nameof(GetVehicle), new { id = Vehicle.Id }, Vehicle);
+            return CreatedAtAction(nameof(GetVehicle), new { id = vehicle.Id }, vehicle);
         }
 
         // DELETE: /Vehicles/5
