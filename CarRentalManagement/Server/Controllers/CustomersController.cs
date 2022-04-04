@@ -1,5 +1,4 @@
-﻿#nullable disable
-using CarRentalManagement.Server.IRepository;
+﻿using CarRentalManagement.Server.IRepository;
 using CarRentalManagement.Shared.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
